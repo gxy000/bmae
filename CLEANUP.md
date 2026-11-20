@@ -25,12 +25,13 @@ unchanged.
 including the six requested EGFP variants and neurite training/evaluation data.
 It copies symlink targets, rebases BlockFS indexes and supports resumed rsync
 transfers. Checkpoints are assumed to be supplied separately. The script has
-not been run on the real datasets. It uses Bash, jq and rsync for copying, then
+not been run on the real datasets. It lists the rsync/cp copies directly, then runs
 `find . -name "precomputed.blockfs" -exec blockfs-rebase {} \;` from the copied
-image root. The Python planner and custom BlockFS rewrite code were removed.
+image root. The JSON/Python planners and custom BlockFS rewrite code were removed.
 
-Git metadata, obsolete model families, unrelated inference code and unused
-evaluation metrics/renderers remain removed. The original license is retained
+Obsolete model families, unrelated inference code and unused evaluation
+metrics/renderers remain removed. A new Git history was initialized for sharing
+the cleaned repository. The original license is retained
 in [LICENSE](LICENSE). Removed tests for the deleted reproduction workflow and
 the source snapshot from shared-path preparation are archived outside this
 repository. Current dataset filenames and shared locations are in

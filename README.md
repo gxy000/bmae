@@ -78,28 +78,23 @@ Older local annotations and generated previews remain in the recovery folder
 recorded in [CLEANUP.md](CLEANUP.md).
 
 To prepare the separate dataset copy, run this manually inside tmux from the
-repository root (Bash 4+, `jq`, `rsync`, and `blockfs-rebase` are required):
+repository root (Bash, `rsync`, and `blockfs-rebase` are required):
 
 ```bash
 bash draft/copy_shared_data.sh
 ```
 
-If it reports `Required command not found: jq`, install the command-line tool
-with `conda install -c conda-forge jq`, then check `jq --version`.
-The similarly named pip package provides Python bindings and does not install
-the executable used by the copy script.
-
-The script copies full cell channels for all retained EGFP manifests and MAE/DINO
-pretraining, plus the neurite training and evaluation data. It validates sources
-before transferring, deduplicates repeated paths, follows symlinks into real
-copies, and rebases copied BlockFS indexes with the standard command:
+The script lists each copy explicitly: two cell channels shared by all six EGFP
+variants and MAE/DINO pretraining, the complete fMOST training and different-SNR
+dataset folders with their TIFFs and SWCs, the confocal evaluation channel, and
+the annotation manifests. It uses rsync to follow symlinks into real copies and
+resume partial transfers, then rebases copied BlockFS indexes with:
 `find . -name "precomputed.blockfs" -exec blockfs-rebase {} \;`
-from the copied image root. Rerunning the
-command resumes partial transfers. Sources are read only; destination files are
-updated without deleting unrelated files. `--dry-run` prints the validated plan
-without copying or rebasing. If datasets live on different disks, edit the
-source variables at the top of the script or set `SOURCE_ROOT`, `SOURCE_FMOST`
-and `SOURCE_AXON` in the environment.
+from the copied image root. Sources are read only; destination files are updated
+without deleting unrelated files. Review the listed paths before running. If
+datasets live on different disks, edit the variables at the top of the script
+or set `SOURCE_ROOT`, `SOURCE_FMOST`, `SOURCE_AXON`, and `SHARED_ROOT` in the
+environment. The script has no JSON parser or command-line options.
 
 | Shared location | Contents |
 | --- | --- |

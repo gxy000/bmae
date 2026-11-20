@@ -8,5 +8,4 @@ dependencies:
   # Newer installer for the same Python runtime; this does not upgrade Python.
   - pip=23.1.2
   - git
-  - jq
   - rsync

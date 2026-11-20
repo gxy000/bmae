@@ -183,7 +183,9 @@
         launchers assume the shared data and weights have been supplied. The Bash helper
         <code>draft/copy_shared_data.sh</code> is for preparing the data copy; it does not copy
         checkpoints and has not been run as part of repository preparation. Dataset preparation
-        rebases copied BlockFS indexes using <code>blockfs-rebase</code>.</div>
+        lists the image-folder and manifest copies explicitly, then rebases the copied BlockFS
+        indexes using <code>find . -name "precomputed.blockfs" -exec blockfs-rebase {} \;</code>.
+        Review the paths at the top of the script before running it.</div>
     </section>
 
     <section id="setup">
@@ -203,29 +205,19 @@ bash draft/setup_environment.sh</code></pre>
         <table>
           <thead><tr><th>Setup file</th><th>What it provides</th></tr></thead>
           <tbody>
-            <tr><td><a href="environment.yml"><code>environment.yml</code></a></td><td>Python 3.7.10, pip, Git, and the <code>jq</code> and <code>rsync</code> command-line tools.</td></tr>
+            <tr><td><a href="environment.yml"><code>environment.yml</code></a></td><td>Python 3.7.10, pip, Git, and the <code>rsync</code> command-line tool.</td></tr>
             <tr><td><a href="requirements.txt"><code>requirements.txt</code></a></td><td>PyTorch 1.12.1 with CUDA 11.3, torchvision 0.13.1, timm 0.3.2, scientific/image libraries, morphology tools, and logging. Pinned lab reader sources include <code>precomputed-tif</code>, <code>blockfs</code>, and <code>mp-shared-memory</code>.</td></tr>
             <tr><td><code>draft/setup_environment.sh</code></td><td>Installs the Python requirements, applies the timm import fix, checks package consistency, and verifies basic imports and required commands.</td></tr>
           </tbody>
         </table>
       </div>
       <p>If you already created a Python 3.7 environment using the original MAE setup,
-        activate it, install the command-line tools with <code>conda install -c conda-forge git jq rsync</code>,
+        activate it, install the command-line tools with <code>conda install -c conda-forge git rsync</code>,
         and run <code>bash draft/setup_environment.sh</code> to align its packages with this project.
         The upstream MAE setup alone does not include the 3D data and morphology dependencies.</p>
       <h3>Check the tools before copying data</h3>
-      <pre><code>command -v jq
-jq --version
-command -v rsync
+      <pre><code>command -v rsync
 command -v blockfs-rebase</code></pre>
-      <div class="note"><strong>If jq is missing:</strong> <code>pip install jq</code> installs
-        <a href="https://pypi.org/project/jq/">Python bindings</a>. The Bash copy script needs the
-        standalone executable. Install it using the
-        <a href="https://jqlang.org/download/">official jq installation instructions</a>:
-        <pre><code>conda install -c conda-forge jq
-jq --version</code></pre>
-        For the existing lab environment, specify its name:
-        <code>conda install -n mae_viz -c conda-forge jq</code>.</div>
       <p class="muted">GPU runs need a compatible NVIDIA driver. The setup helper reports whether
         PyTorch can access CUDA. Fresh installation on a new machine has not yet been verified;
         the CPU checks below passed in the existing lab environment.</p>
