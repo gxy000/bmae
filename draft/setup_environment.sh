@@ -43,4 +43,3 @@ print("PyTorch:", torch.__version__, "timm:", timm.__version__)
 print("CUDA available:", torch.cuda.is_available())
 PY
 command -v rsync
-command -v blockfs-rebase
