@@ -3,8 +3,9 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  # Match the Python version used by the lab's tested mae_viz environment.
-  - python=3.7
+  # Core package pins in requirements.txt were checked against mae_viz.
+  - python=3.7.10
+  # Newer installer for the same Python runtime; this does not upgrade Python.
   - pip=23.1.2
   - git
   - jq

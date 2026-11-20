@@ -1,5 +1,5 @@
 # Install in the Python 3.7 environment using draft/setup_environment.sh.
-# Match the tested CUDA 11.3 / PyTorch 1.12 environment.
+# Runtime versions checked against mae_viz on 2026-11-20.
 --extra-index-url https://download.pytorch.org/whl/cu113
 torch==1.12.1+cu113
 torchvision==0.13.1+cu113
@@ -18,11 +18,11 @@ morphio==3.3.6
 neurom==3.2.3
 tensorboard==2.11.2
 wandb==0.18.7
-protobuf==3.20.3
+protobuf==3.15.7
 zarr==2.7.0
 numcodecs==0.7.3
 fsspec==2023.1.0
-tqdm==4.66.5
+tqdm==4.67.1
 
 # These lab packages are installed from their public source repositories.
 # The reader implementations at these revisions match the working environment.

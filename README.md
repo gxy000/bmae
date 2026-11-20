@@ -30,6 +30,12 @@ The environment follows the tested Python 3.7 / CUDA 11.3 stack; GPU runs requir
 a compatible NVIDIA driver. An existing working `mae_viz` environment can also
 be used. A fresh environment installation has not been run during this review.
 
+For background, follow the [original MAE installation notes](https://github.com/facebookresearch/mae#masked-autoencoders-a-pytorch-implementation),
+which refer to DeiT setup and the `timm==0.3.2` compatibility fix. This repository
+also needs the 3D image readers, morphology tools, and evaluation dependencies
+in `requirements.txt`. The HTML guide explains both the upstream base and these
+project additions. Its setup commands use the versions checked in `mae_viz`.
+
 After preparing the dataset copy and supplying the checkpoints, run a launcher:
 
 ```bash
@@ -77,6 +83,11 @@ repository root (Bash 4+, `jq`, `rsync`, and `blockfs-rebase` are required):
 ```bash
 bash draft/copy_shared_data.sh
 ```
+
+If it reports `Required command not found: jq`, install the command-line tool
+with `conda install -c conda-forge jq`, then check `jq --version`.
+The similarly named pip package provides Python bindings and does not install
+the executable used by the copy script.
 
 The script copies full cell channels for all retained EGFP manifests and MAE/DINO
 pretraining, plus the neurite training and evaluation data. It validates sources

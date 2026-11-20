@@ -22,7 +22,14 @@ if (( $# > 1 )); then
 fi
 
 for tool in jq rsync blockfs-rebase realpath; do
-    command -v "$tool" >/dev/null || { echo "Required command not found: $tool" >&2; exit 1; }
+    if ! command -v "$tool" >/dev/null; then
+        echo "Required command not found: $tool" >&2
+        if [[ "$tool" == jq ]]; then
+            echo "Install the jq executable: conda install -c conda-forge jq" >&2
+            echo "The pip package jq provides Python bindings, not this command." >&2
+        fi
+        exit 1
+    fi
 done
 
 # Deduplicate images shared by multiple training/evaluation manifests.

@@ -85,7 +85,7 @@
   </header>
   <nav aria-label="Guide sections">
     <a href="#overview">Overview</a><a href="#code">Code map</a><a href="#data">Data &amp; checkpoints</a>
-    <a href="#start">First steps</a><a href="#experiments">Experiments</a>
+    <a href="#setup">Environment</a><a href="#start">First steps</a><a href="#experiments">Experiments</a>
   </nav>
   <article>
     <section id="overview">
@@ -186,17 +186,54 @@
         rebases copied BlockFS indexes using <code>blockfs-rebase</code>.</div>
     </section>
 
-    <section id="start">
-      <h2>4. Your first session</h2>
-      <ol class="steps">
-        <li><strong>Create the environment.</strong> From your repository checkout:
-          <pre><code>conda env create -f environment.yml
+    <section id="setup">
+      <h2>4. Set up your environment</h2>
+      <p>Start with the <a href="https://github.com/facebookresearch/mae#masked-autoencoders-a-pytorch-implementation">original MAE installation notes</a>.
+        MAE refers to the <a href="https://github.com/facebookresearch/deit">DeiT setup</a> and uses
+        <code>timm==0.3.2</code>, including an import compatibility fix for newer PyTorch versions.
+        This supplies the background for the encoder code. Brain MAE also needs 3D image readers,
+        morphology libraries, and evaluation packages.</p>
+      <p><strong>For this repository, use the following commands from your checkout.</strong>
+        The dependency pins were checked against the lab’s working <code>mae_viz</code>
+        environment. They create a separate environment named <code>brain-mae</code>.</p>
+      <pre><code>conda env create -f environment.yml
 conda activate brain-mae
 bash draft/setup_environment.sh</code></pre>
-          <p>The setup follows the lab’s Python 3.7, PyTorch 1.12.1, CUDA 11.3, and
-            <code>timm==0.3.2</code> stack. The helper installs volume readers and applies the
-            timm compatibility import fix. A fresh installation has not yet been verified.</p>
-        </li>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Setup file</th><th>What it provides</th></tr></thead>
+          <tbody>
+            <tr><td><a href="environment.yml"><code>environment.yml</code></a></td><td>Python 3.7.10, pip, Git, and the <code>jq</code> and <code>rsync</code> command-line tools.</td></tr>
+            <tr><td><a href="requirements.txt"><code>requirements.txt</code></a></td><td>PyTorch 1.12.1 with CUDA 11.3, torchvision 0.13.1, timm 0.3.2, scientific/image libraries, morphology tools, and logging. Pinned lab reader sources include <code>precomputed-tif</code>, <code>blockfs</code>, and <code>mp-shared-memory</code>.</td></tr>
+            <tr><td><code>draft/setup_environment.sh</code></td><td>Installs the Python requirements, applies the timm import fix, checks package consistency, and verifies basic imports and required commands.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>If you already created a Python 3.7 environment using the original MAE setup,
+        activate it, install the command-line tools with <code>conda install -c conda-forge git jq rsync</code>,
+        and run <code>bash draft/setup_environment.sh</code> to align its packages with this project.
+        The upstream MAE setup alone does not include the 3D data and morphology dependencies.</p>
+      <h3>Check the tools before copying data</h3>
+      <pre><code>command -v jq
+jq --version
+command -v rsync
+command -v blockfs-rebase</code></pre>
+      <div class="note"><strong>If jq is missing:</strong> <code>pip install jq</code> installs
+        <a href="https://pypi.org/project/jq/">Python bindings</a>. The Bash copy script needs the
+        standalone executable. Install it using the
+        <a href="https://jqlang.org/download/">official jq installation instructions</a>:
+        <pre><code>conda install -c conda-forge jq
+jq --version</code></pre>
+        For the existing lab environment, specify its name:
+        <code>conda install -n mae_viz -c conda-forge jq</code>.</div>
+      <p class="muted">GPU runs need a compatible NVIDIA driver. The setup helper reports whether
+        PyTorch can access CUDA. Fresh installation on a new machine has not yet been verified;
+        the CPU checks below passed in the existing lab environment.</p>
+    </section>
+
+    <section id="start">
+      <h2>5. Your first session</h2>
+      <ol class="steps">
         <li><strong>Run the small CPU checks.</strong> These require no production images or weights.
           <pre><code>MPLBACKEND=Agg python -B -m unittest discover -s tests -v</code></pre>
           <p>The reviewed version passes 20 tests. This checks core code paths; it does not
@@ -217,7 +254,7 @@ python test_evaluate_cn_wholev.py --help</code></pre>
     </section>
 
     <section id="experiments">
-      <h2>5. Choose a workflow</h2>
+      <h2>6. Choose a workflow</h2>
       <p>Run the relevant launcher with <code>bash &lt;path&gt;</code>. Training examples use two
         GPUs; review <code>CUDA_VISIBLE_DEVICES</code> and <code>--nproc_per_node</code> for your machine.</p>
       <div class="table-wrap">
