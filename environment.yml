@@ -1,0 +1,11 @@
+name: brain-mae
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  # Match the Python version used by the lab's tested mae_viz environment.
+  - python=3.7
+  - pip=23.1.2
+  - git
+  - jq
+  - rsync

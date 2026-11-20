@@ -1,0 +1,31 @@
+# Install in the Python 3.7 environment using draft/setup_environment.sh.
+# Match the tested CUDA 11.3 / PyTorch 1.12 environment.
+--extra-index-url https://download.pytorch.org/whl/cu113
+torch==1.12.1+cu113
+torchvision==0.13.1+cu113
+timm==0.3.2
+numpy==1.20.2
+scipy==1.6.2
+scikit-image==0.18.1
+scikit-learn==0.24.1
+opencv-python-headless==4.5.4.58
+matplotlib==3.5.3
+imageio==2.9.0
+tifffile==2021.3.31
+imagecodecs==2021.11.20
+Pillow==8.1.2
+morphio==3.3.6
+neurom==3.2.3
+tensorboard==2.11.2
+wandb==0.18.7
+protobuf==3.20.3
+zarr==2.7.0
+numcodecs==0.7.3
+fsspec==2023.1.0
+tqdm==4.66.5
+
+# These lab packages are installed from their public source repositories.
+# The reader implementations at these revisions match the working environment.
+mp-shared-memory @ git+https://github.com/chunglabmit/mp_shared_memory.git@4430d78c315725298bcec1b562de9940c22f28d2
+blockfs @ git+https://github.com/chunglabmit/blockfs.git@147be03408dfeac7f824a19d61c55dfc5f9094e2
+precomputed-tif @ git+https://github.com/chunglabmit/precomputed-tif.git@a5054ca7d114c1461b0c047b669d51a93688ebbb

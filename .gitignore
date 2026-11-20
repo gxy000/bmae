@@ -1,0 +1,26 @@
+# Python caches and local environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Local credentials and editor files
+.env
+.env.*
+!.env.example
+.DS_Store
+*.swp
+*.swo
+
+# Generated training/evaluation output and model weights
+/output_dir/
+/eval/
+/wandb/
+/runs/
+*.pth
+*.pt
+*.ckpt
+events.out.tfevents.*

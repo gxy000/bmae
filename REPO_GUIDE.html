@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A practical introduction to the Brain MAE code, data, training, and evaluation workflows for a new lab member.">
+  <title>Brain MAE — A guide for new lab members</title>
+  <style>
+    :root { --ink:#182b35; --muted:#536771; --paper:#fff; --bg:#eef2f1; --line:#d7e1df; --accent:#146b62; --pale:#eaf4f0; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif; }
+    main { max-width:1060px; margin:36px auto; background:var(--paper); border:1px solid var(--line); border-radius:18px; overflow:hidden; }
+    header { padding:48px 56px 36px; background:#153f3c; color:white; }
+    .eyebrow { margin:0 0 10px; font-size:12px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; }
+    h1 { margin:0; font-size:clamp(32px,5vw,48px); line-height:1.15; letter-spacing:-.04em; }
+    header p:last-child { max-width:760px; margin:18px 0 0; color:#dbece7; font-size:18px; }
+    nav { display:flex; flex-wrap:wrap; gap:8px 23px; padding:18px 56px; border-bottom:1px solid var(--line); background:#f7faf9; }
+    a { color:var(--accent); text-underline-offset:3px; }
+    nav a { font-size:14px; font-weight:600; text-decoration:none; }
+    article { padding:8px 56px 40px; }
+    section { margin-top:34px; scroll-margin-top:20px; }
+    h2 { font-size:25px; line-height:1.3; letter-spacing:-.025em; margin:0 0 15px; }
+    h3 { font-size:18px; line-height:1.4; margin:0 0 10px; }
+    p { margin:10px 0 15px; }
+    .muted { color:var(--muted); }
+    .cards { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    .card { padding:22px; border:1px solid var(--line); border-radius:12px; }
+    .card p:last-child { margin-bottom:0; }
+    .tag { display:inline-block; margin-bottom:12px; color:var(--accent); font-size:12px; font-weight:750; letter-spacing:.07em; text-transform:uppercase; }
+    code { font: .87em/1.5 ui-monospace,SFMono-Regular,Consolas,monospace; overflow-wrap:anywhere; }
+    :not(pre) > code { background:#f0f4f3; padding:2px 5px; border-radius:4px; }
+    pre { padding:17px 20px; background:#102d2e; color:#ecf6f3; border-radius:9px; overflow-x:auto; font-size:14px; line-height:1.6; }
+    pre code { overflow-wrap:normal; font-size:inherit; }
+    .flow { display:grid; grid-template-columns:1fr auto 1fr auto 1fr; align-items:center; gap:12px; margin:20px 0; }
+    .stage { min-height:120px; padding:18px; background:var(--pale); border:1px solid #d1e4dc; border-radius:10px; }
+    .stage strong { display:block; margin-bottom:7px; }
+    .stage span { display:block; font-size:14px; color:var(--muted); }
+    .arrow { font-size:22px; color:var(--accent); }
+    .note { margin:18px 0; padding:16px 20px; background:#f3f7f6; border-left:3px solid var(--accent); border-radius:0 8px 8px 0; }
+    .table-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    th { text-align:left; color:var(--muted); font-size:12px; letter-spacing:.04em; text-transform:uppercase; background:#f7faf9; }
+    th,td { padding:12px 13px; border-bottom:1px solid var(--line); vertical-align:top; }
+    td:first-child { width:40%; }
+    ul,ol { padding-left:23px; }
+    li { margin:8px 0; }
+    .steps li { padding-left:5px; margin-bottom:15px; }
+    footer { padding:22px 56px; border-top:1px solid var(--line); color:var(--muted); font-size:13px; }
+    @media (max-width:700px) {
+      main { margin:0; border:0; border-radius:0; }
+      header { padding:34px 24px 28px; }
+      nav { padding:16px 24px; gap:8px 18px; }
+      article { padding:0 24px 30px; }
+      footer { padding:20px 24px; }
+      .cards { grid-template-columns:1fr; }
+      .flow { grid-template-columns:1fr; gap:6px; }
+      .stage { min-height:0; }
+      .arrow { text-align:center; transform:rotate(90deg); }
+      th,td { padding:10px 8px; }
+    }
+    @media print {
+      body { background:white; font-size:11pt; }
+      main { max-width:none; margin:0; border:0; }
+      header { background:white; color:var(--ink); padding:10px 0 20px; }
+      header p:last-child { color:var(--muted); }
+      nav { display:none; }
+      article,footer { padding:0; }
+      h2,h3 { break-after:avoid; }
+      .card,.flow,pre,tr,.note { break-inside:avoid; }
+      pre { background:#f1f4f3; color:var(--ink); white-space:pre-wrap; overflow-wrap:anywhere; }
+      a { color:inherit; }
+      section { margin-top:25px; }
+      footer { margin-top:25px; padding-top:12px; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">Lab code · Getting started</p>
+    <h1>Brain MAE</h1>
+    <p>A practical guide to learning from 3D microscopy volumes, detecting cells,
+      and segmenting neurites. Start with the launchers, then follow the code one layer at a time.</p>
+  </header>
+  <nav aria-label="Guide sections">
+    <a href="#overview">Overview</a><a href="#code">Code map</a><a href="#data">Data &amp; checkpoints</a>
+    <a href="#start">First steps</a><a href="#experiments">Experiments</a>
+  </nav>
+  <article>
+    <section id="overview">
+      <h2>1. What this repository does</h2>
+      <p>The repository contains encoder pretraining, supervised finetuning, and whole-volume
+        evaluation for two tasks. The <strong>encoder</strong> learns features from image patches;
+        the downstream prediction head converts those features into task-specific outputs.</p>
+      <div class="cards">
+        <div class="card">
+          <span class="tag">Cell detection · celldet</span>
+          <h3>Find cell centers</h3>
+          <p>The model predicts a center heatmap and spatial offsets. Evaluation decodes these
+            into cell coordinates and matches them to annotated centers.</p>
+          <p><strong>Evaluator:</strong><br><code>test_evaluate_cn_wholev.py</code></p>
+        </div>
+        <div class="card">
+          <span class="tag">Neurite segmentation · axonseg</span>
+          <h3>Recover neurites and separate instances</h3>
+          <p>The model predicts a heatmap and instance embeddings. Evaluation assembles volume
+            predictions and measures centerline, instance, and connectivity quality.</p>
+          <p><strong>Evaluator:</strong><br><code>test_axonseg_multidata_wholev.py</code></p>
+        </div>
+      </div>
+      <div class="flow" aria-label="Workflow: pretraining, finetuning, evaluation">
+        <div class="stage"><strong>Pretrain</strong><span>Unlabeled image crops → encoder weights</span></div>
+        <span class="arrow" aria-hidden="true">→</span>
+        <div class="stage"><strong>Finetune</strong><span>Labeled data + encoder → task checkpoint</span></div>
+        <span class="arrow" aria-hidden="true">→</span>
+        <div class="stage"><strong>Evaluate</strong><span>Checkpoint + test volumes → metrics and figures</span></div>
+      </div>
+      <p><strong>MAE</strong> learns by reconstructing masked image patches. <strong>DINO</strong>
+        learns features through a student–teacher objective using multiple crops. Both are
+        pretraining options; finetuning adds the supervised task.</p>
+      <div class="note">These stages are separate commands. Choose the encoder checkpoint explicitly
+        with <code>--finetune</code>; use <code>--resume</code> to continue a training run.
+        Omitting <code>--finetune</code> starts downstream training from scratch.</div>
+    </section>
+
+    <section id="code">
+      <h2>2. How to read the code</h2>
+      <p>Begin with a shell launcher: it records the actual dataset, architecture, checkpoint,
+        and experiment settings. Then follow this path through the Python files.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Location</th><th>What to look for</th></tr></thead>
+          <tbody>
+            <tr><td><code>draft/train_scripts/</code><br><code>draft/eval_scripts/</code></td><td>Runnable experiment configurations. These are the best starting points.</td></tr>
+            <tr><td><code>main_*.py</code></td><td>Argument parsing, datasets, model construction, optimizer, checkpoint loading, and the epoch loop.</td></tr>
+            <tr><td><code>engine_*.py</code></td><td>One training epoch: forward pass, losses, gradients, optimizer updates, and logging.</td></tr>
+            <tr><td><code>models_*.py</code></td><td>Encoder and decoder definitions, prediction heads, and model factory names used by <code>--model</code>.</td></tr>
+            <tr><td><code>util/*datasets*.py</code><br><code>util/DINO_datasets.py</code></td><td>Image/annotation loading, crop sampling, normalization, augmentation, and training targets.</td></tr>
+            <tr><td><code>util/bmae_utils.py</code><br><code>util/transforms.py</code><br><code>util/visualizer.py</code></td><td>Shared image, annotation, metric, transform, and visualization helpers.</td></tr>
+            <tr><td><code>util/misc.py</code><br><code>util/lr_sched.py</code></td><td>Distributed training, checkpoint utilities, logging, and learning-rate schedules.</td></tr>
+            <tr><td><code>tests/</code></td><td>Small CPU examples that exercise the retained models and evaluation helpers.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>For cell detection, trace <code>main_finetune_hm_offset.py</code> →
+        <code>models_mae_cn_hm_offset.py</code> and <code>engine_finetune_cn_hm_offset.py</code>.
+        For neurites, trace <code>main_finetune_axon_hm_multidata.py</code> →
+        <code>models_mae_axon_hm_multidata.py</code> and <code>engine_finetune_axon_hm_multidata.py</code>.</p>
+      <p class="muted">“Axon,” “axonseg,” and “neuriteseg” in filenames refer to the neurite workflow.
+        The <code>multidata</code> name remains in neurite training and MAE pretraining; cell detection
+        uses the single retained heatmap/offset model.</p>
+    </section>
+
+    <section id="data">
+      <h2>3. Images, annotations, and checkpoints</h2>
+      <p>The JSON files in <code>data/</code> describe datasets and annotations. The large image
+        volumes live separately in the shared lab folder. Neurite datasets also use traced
+        morphology files in SWC format.</p>
+      <pre><code>/media/hddshare/general/mae_brain/
+├── data/bmae/                       Cell images and pretraining channels
+│   ├── packed_training_data/fMOST/  Neurite images, SWCs, and manifests
+│   └── axon/                       Confocal neurite evaluation data
+└── brain-mae/
+    ├── data/                       Copied annotation manifests
+    ├── output_dir/                 Checkpoints and training logs
+    └── eval/                       Evaluation metrics and figures</code></pre>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Dataset group</th><th>Manifest / use</th></tr></thead>
+          <tbody>
+            <tr><td>Cell training variants</td><td>Six retained EGFP sets: <code>egfp_v1_400</code>, <code>v2</code>, <code>v3</code>, <code>v4</code>, <code>v5</code>, and <code>v9</code>. Their exact JSON filenames are listed in the README. The cell finetuning launcher selects <code>data/EGFP_200_3x512.json</code>.</td></tr>
+            <tr><td>Cell validation / evaluation</td><td><code>EGFP_200_val.json</code> / <code>EGFP_200_eval4_0915.json</code>.</td></tr>
+            <tr><td>Neurite training / validation</td><td><code>train_Seg_Net_0129.json</code>. The finetuning launcher reads this under the shared fMOST image folder.</td></tr>
+            <tr><td>Neurite evaluation</td><td><code>train_Seg_Net.json</code> with held-out axon IDs 6 and 7; <code>Seg_Net_data_for_different_SNR_0204.json</code> for signal-to-noise comparisons; <code>4x_Thy1_test_left.json</code> for confocal images.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Cell evaluation resolves its manifest under the repository’s <code>data/</code> folder.
+        Neurite evaluation resolves its manifest under the supplied <code>--data_path</code>.
+        Pretraining samples unlabeled volumes directly.</p>
+      <div class="note"><strong>Check availability before a GPU run.</strong> The paths in the
+        launchers assume the shared data and weights have been supplied. The Bash helper
+        <code>draft/copy_shared_data.sh</code> is for preparing the data copy; it does not copy
+        checkpoints and has not been run as part of repository preparation. Dataset preparation
+        rebases copied BlockFS indexes using <code>blockfs-rebase</code>.</div>
+    </section>
+
+    <section id="start">
+      <h2>4. Your first session</h2>
+      <ol class="steps">
+        <li><strong>Create the environment.</strong> From your repository checkout:
+          <pre><code>conda env create -f environment.yml
+conda activate brain-mae
+bash draft/setup_environment.sh</code></pre>
+          <p>The setup follows the lab’s Python 3.7, PyTorch 1.12.1, CUDA 11.3, and
+            <code>timm==0.3.2</code> stack. The helper installs volume readers and applies the
+            timm compatibility import fix. A fresh installation has not yet been verified.</p>
+        </li>
+        <li><strong>Run the small CPU checks.</strong> These require no production images or weights.
+          <pre><code>MPLBACKEND=Agg python -B -m unittest discover -s tests -v</code></pre>
+          <p>The reviewed version passes 20 tests. This checks core code paths; it does not
+            validate a full distributed GPU experiment.</p>
+        </li>
+        <li><strong>Read one launcher and inspect its options.</strong>
+          <pre><code>python main_finetune_hm_offset.py --help
+python test_evaluate_cn_wholev.py --help</code></pre>
+          <p>Identify the image root, manifest, architecture, checkpoint, GPU selection, and output directory.</p>
+        </li>
+        <li><strong>Evaluate a supplied checkpoint.</strong> Once its images and weights are available:
+          <pre><code>bash draft/eval_scripts/eval_celldet_egfp_4x.sh</code></pre>
+          <p>This launcher compares two cell checkpoints. The neurite launchers are listed below;
+            some run more than one dataset. Open the result JSON and inspect prediction figures
+            alongside the numerical scores.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section id="experiments">
+      <h2>5. Choose a workflow</h2>
+      <p>Run the relevant launcher with <code>bash &lt;path&gt;</code>. Training examples use two
+        GPUs; review <code>CUDA_VISIBLE_DEVICES</code> and <code>--nproc_per_node</code> for your machine.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Task</th><th>Launcher</th></tr></thead>
+          <tbody>
+            <tr><td>Cell MAE pretraining</td><td><code>draft/train_scripts/launch_pretrain.sh</code></td></tr>
+            <tr><td>Cell DINO pretraining</td><td><code>draft/train_scripts/celldet/launch_pretrain_dino.sh</code></td></tr>
+            <tr><td>Cell finetuning</td><td><code>draft/train_scripts/celldet/launch_finetune.sh</code></td></tr>
+            <tr><td>Neurite MAE pretraining</td><td><code>draft/train_scripts/neuriteseg/launch_pretrain.sh</code></td></tr>
+            <tr><td>Neurite finetuning</td><td><code>draft/train_scripts/neuriteseg/launch_finetune.sh</code></td></tr>
+            <tr><td>Neurite evaluation</td><td>Under <code>draft/eval_scripts/</code>:<br><code>eval_axon_4x.sh</code>, <code>eval_seg_net_0208.sh</code>, <code>eval_seg_net_difSNR.sh</code>, <code>eval_seg_net_scaling.sh</code>.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Typical model aliases are <code>mae_vit_base_patch16_4</code> for cell finetuning and
+        <code>mae_vit_base_patch16_1c_32</code> for neurites. The neurite MAE example uses
+        <code>--vol_size 32</code> for 32 × 256 × 256 crops on copied EGFP images. It is an
+        exploration example; the original neurite finetuning run uses a separately supplied
+        NeuN/GFAP encoder checkpoint.</p>
+      <h3>A good first experiment</h3>
+      <p>Record an evaluation baseline, duplicate its launcher, and vary one heatmap threshold
+        (<code>--threshold_hm</code> for cells; <code>--hm_threshold</code> for neurites).
+        Compare false positives, missed structures, and visual predictions. Keep the checkpoint,
+        test split, matching settings, and other parameters fixed.</p>
+      <p>For training experiments, give each run a new <code>--output_dir</code> and
+        <code>--log_dir</code>. Keep a copy of the exact command. Effective batch size is
+        <code>batch_size × accum_iter × number of GPUs</code>; changing GPU count can also change
+        random sampling and results. Training launchers enable W&amp;B logging; adjust their logging
+        flags to your lab account or omit the W&amp;B flags.</p>
+      <p class="muted">Further detail in the repository: <a href="README.md">README.md</a> for setup and
+        datasets, <a href="TRAINING.md">TRAINING.md</a> for direct commands, and
+        <a href="CLEANUP.md">CLEANUP.md</a> for supported code and review history.
+        This guide contains its own styles and can be opened offline or printed to PDF.</p>
+    </section>
+  </article>
+  <footer>Brain MAE · Lab onboarding guide · Prepared 20 November 2026 · Based on the retained training and evaluation code</footer>
+</main>
+</body>
+</html>
